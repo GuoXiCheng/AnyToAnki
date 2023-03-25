@@ -1,0 +1,9 @@
+{
+    "name": "AnyToAnki",
+    "package": "AnyToAnki",
+    "description": "Convert any cloud notes to Anki deck",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "minAnkiVersion": "2.1.54",
+    "main": "webview.py"
+}
