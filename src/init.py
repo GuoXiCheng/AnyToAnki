@@ -18,13 +18,19 @@ def create_deck():
 
     deck = collection.decks.id(deck_name)
 
-    # 创建新的笔记对象
-    note = Note(col=collection, model=note_type)
-    note["Front"] = "Front content"
-    note["Back"] = "Back content"
+    foundNoteId = collection.find_notes("\"deck:My Deck\" \"Front:Front content\"")
+    if len(foundNoteId) == 1:
+        foundNote = collection.getNote(foundNoteId[0])
+        foundNote["Front"] = "New Front Note Content"
+        foundNote.flush()
+    else:
+        # 创建新的笔记对象
+        note = Note(col=collection, model=note_type)
+        note["Front"] = "Front content"
+        note["Back"] = "Back content"
 
-    # 添加新的笔记到牌组中
-    collection.add_note(note, deck)
+        # 添加新的笔记到牌组中
+        collection.add_note(note, deck)
 
     # 保存集合
     collection.save()
@@ -36,8 +42,8 @@ def create_deck():
 
 # 定义一个处理“同步”按钮点击事件的函数
 def on_sync_clicked():
-    create_deck()
-    QMessageBox.information(mw, "同步成功", "同步成功！")
+    result = create_deck()
+    QMessageBox.information(mw, "同步成功", "同步成功！" + str(result))
     # 弹出消息框，显示“同步成功”的消息。mw 作为父窗口显示消息框，确保消息框显示在 Anki 应用程序中。
 
 def init():
