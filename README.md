@@ -1,3 +1,6 @@
+![](https://img.shields.io/github/actions/workflow/status/GuoXiCheng/AnyToAnki/build-and-test.yml?branch=main)
+![](https://img.shields.io/codecov/c/github/GuoXiCheng/AnyToAnki)
+
 # AnyToAnki
 将文档内容转换为Anki卡片
 
