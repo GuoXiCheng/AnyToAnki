@@ -29,3 +29,9 @@ deactivate
 打开Anki软件，在菜单栏中选择 "工具" -> "插件"
 
 在插件管理器中，点击 "本地安装" 按钮，然后选择你的 "AnyToAnki.ankiaddon" 文件
+
+## 测试
+
+测试: `pytest`
+
+测试覆盖率: `pytest --cov=src`
