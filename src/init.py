@@ -1,10 +1,10 @@
-
 # 导入必要的模块
 from aqt import mw  # 从 aqt 模块导入 mw 对象，用于访问 Anki 主窗口
 from aqt.qt import *  # 导入 PyQt 库，用于创建用户界面
 from anki.notes import Note
 from aqt.deckbrowser import DeckBrowser
- 
+
+
 def create_note_type():
     model_name = "MyModel"
     model_fields = [
@@ -20,7 +20,7 @@ def create_note_type():
         {
             "name": "MyModel",
             "qfmt": "{{Front}}<br>{{Option1}}<br>{{Option2}}<br>{{Option3}}<br>{{Option4}}",
-            "afmt": "{{Front}}<br>{{Answer}}"
+            "afmt": "{{Front}}<br>{{Answer}}",
         }
     ]
 
@@ -35,6 +35,7 @@ def create_note_type():
 
     mw.col.models.add(note_type)
 
+
 def create_deck():
     # 获取当前打开集合
     collection = mw.col
@@ -48,7 +49,7 @@ def create_deck():
 
     deck = collection.decks.id(deck_name)
 
-    foundNoteId = collection.find_notes("\"deck:My Deck\" \"Front:Front content\"")
+    foundNoteId = collection.find_notes('"deck:My Deck" "Front:Front content"')
     if len(foundNoteId) == 1:
         foundNote = collection.getNote(foundNoteId[0])
         foundNote["Front"] = "New Front Note Content"
@@ -77,10 +78,8 @@ def on_sync_clicked():
     QMessageBox.information(mw, "同步成功", "同步成功！" + str(result))
     # 弹出消息框，显示“同步成功”的消息。mw 作为父窗口显示消息框，确保消息框显示在 Anki 应用程序中。
 
+
 def init():
     action = QAction("AnyToAnki Sync", mw)
     action.triggered.connect(on_sync_clicked)
     mw.form.menuTools.addAction(action)
-    
-    
-
