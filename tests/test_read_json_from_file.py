@@ -8,13 +8,10 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from src.utils import read_json_from_file
 
+
 @pytest.fixture
 def sample_json_data():
-    return {
-        "name": "John Smith",
-        "age": 42,
-        "email": "john.smith@example.com"
-    }
+    return {"name": "John Smith", "age": 42, "email": "john.smith@example.com"}
 
 
 @pytest.fixture

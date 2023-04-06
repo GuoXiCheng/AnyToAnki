@@ -40,3 +40,20 @@
 
 
 # main()
+
+try:
+    from aqt import mw
+    from aqt.qt import QAction, QMessageBox
+
+    def on_sync_clicked():
+        try:
+            # create_note_type()
+            QMessageBox.information(mw, "同步成功", "同步笔记成功!")
+        except Exception as e:
+            QMessageBox.information(mw, "同步失败", str(e))
+
+    action = QAction("AnyToAnki Sync", mw)
+    action.triggered.connect(on_sync_clicked)
+    mw.form.menuTools.addAction(action)
+except:
+    print("失败")
