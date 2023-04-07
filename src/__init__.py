@@ -41,14 +41,53 @@
 
 # main()
 
+
+import json
+import os
+
+from .utils import read_from_file
+
+
 try:
     from aqt import mw
     from aqt.qt import QAction, QMessageBox
 
+    def update_or_create_note_type():
+        path = os.path.join(
+            os.path.dirname(__file__), "note-type/choice-question/config.json"
+        )
+        json_config = json.loads(read_from_file(path))
+        model_name = json_config["model_name"]
+        model_fields = json_config["model_fields"]
+
+        note_type = mw.col.models.by_name(model_name)
+
+        qfmt_template = read_from_file("note-type/choice-question/front.html")
+        afmt_template = read_from_file("note-type/choice-question/backend.html")
+        css_template = read_from_file("note-type/choice-question/style.css")
+
+        if note_type is None:
+            note_type = mw.col.models.new(model_name)
+            for field in model_fields:
+                mw.col.models.addField(note_type, mw.col.models.newField(**field))
+
+            temp = mw.col.models.newTemplate(model_name)
+            temp["qfmt"] = qfmt_template
+            temp["afmt"] = afmt_template
+            mw.col.models.addTemplate(note_type, temp)
+            mw.col.models.add(note_type)
+
+        note_type["css"] = css_template
+
+        tmpl = note_type["tmpls"][0]
+        tmpl["qfmt"] = qfmt_template
+        tmpl["afmt"] = afmt_template
+        mw.col.models.save(note_type)
+
     def on_sync_clicked():
         try:
-            # create_note_type()
-            QMessageBox.information(mw, "同步成功", "同步笔记成功!")
+            update_or_create_note_type()
+            QMessageBox.information(mw, "同步成功", f"同步笔记成功!")
         except Exception as e:
             QMessageBox.information(mw, "同步失败", str(e))
 

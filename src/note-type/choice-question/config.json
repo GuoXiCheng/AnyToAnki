@@ -8,12 +8,5 @@
         {"name": "Option3"},
         {"name": "Option4"},
         {"name": "Answer"}
-    ],
-    "model_templates": [
-        {
-            "name": "MyModel",
-            "qfmt": "{{Front}}<br>{{Option1}}<br>{{Option2}}<br>{{Option3}}<br>{{Option4}}",
-            "afmt": "{{Front}}<br>{{Answer}}"
-        }
     ]
 }
