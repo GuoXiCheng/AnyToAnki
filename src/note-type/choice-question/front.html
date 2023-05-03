@@ -1,5 +1,199 @@
-<div>{{Front}}</div>
-<div>{{Option1}}</div>
-<div>{{Option2}}</div>
-<div>{{Option3}}</div>
-<div>{{Option4}}</div>
+<div style="display: flex; justify-content: center; align-items: center">
+    <div>
+      <div>{{Sequence}}. <span id="Question">{{Question}}</span></div>
+      <ol id="ol"></ol>
+      <div id="option" style="display: none">{{Option}}</div>
+      <div id="answer" style="display: none">{{Answer}}</div>
+    </div>
+  </div>
+  
+  <script>
+    // v1.0.0 - https://github.com/SimonLammer/anki-persistence/blob/eeb2e1a9e37c941dd63e1fe6c2a257f043c40e0d/script.js
+    if (void 0 === window.Persistence) {
+      var _persistenceKey = 'github.com/SimonLammer/anki-persistence/',
+        _defaultKey = '_default';
+      if (
+        ((window.Persistence_sessionStorage = function () {
+          var e = !1;
+          try {
+            'object' == typeof window.sessionStorage &&
+              ((e = !0),
+              (this.clear = function () {
+                for (var e = 0; e < sessionStorage.length; e++) {
+                  var t = sessionStorage.key(e);
+                  0 == t.indexOf(_persistenceKey) &&
+                    (sessionStorage.removeItem(t), e--);
+                }
+              }),
+              (this.setItem = function (e, t) {
+                null == t && ((t = e), (e = _defaultKey)),
+                  sessionStorage.setItem(_persistenceKey + e, JSON.stringify(t));
+              }),
+              (this.getItem = function (e) {
+                return (
+                  null == e && (e = _defaultKey),
+                  JSON.parse(sessionStorage.getItem(_persistenceKey + e))
+                );
+              }),
+              (this.removeItem = function (e) {
+                null == e && (e = _defaultKey),
+                  sessionStorage.removeItem(_persistenceKey + e);
+              }));
+          } catch (e) {}
+          this.isAvailable = function () {
+            return e;
+          };
+        }),
+        (window.Persistence_windowKey = function (e) {
+          var t = window[e],
+            n = !1;
+          'object' == typeof t &&
+            ((n = !0),
+            (this.clear = function () {
+              t[_persistenceKey] = {};
+            }),
+            (this.setItem = function (e, n) {
+              null == n && ((n = e), (e = _defaultKey)),
+                (t[_persistenceKey][e] = n);
+            }),
+            (this.getItem = function (e) {
+              return (
+                null == e && (e = _defaultKey),
+                null == t[_persistenceKey][e] ? null : t[_persistenceKey][e]
+              );
+            }),
+            (this.removeItem = function (e) {
+              null == e && (e = _defaultKey), delete t[_persistenceKey][e];
+            }),
+            null == t[_persistenceKey] && this.clear()),
+            (this.isAvailable = function () {
+              return n;
+            });
+        }),
+        (window.Persistence = new Persistence_sessionStorage()),
+        Persistence.isAvailable() ||
+          (window.Persistence = new Persistence_windowKey('py')),
+        !Persistence.isAvailable())
+      ) {
+        var titleStartIndex = window.location.toString().indexOf('title'),
+          titleContentIndex = window.location
+            .toString()
+            .indexOf('main', titleStartIndex);
+        titleStartIndex > 0 &&
+          titleContentIndex > 0 &&
+          titleContentIndex - titleStartIndex < 10 &&
+          (window.Persistence = new Persistence_windowKey('qt'));
+      }
+    }
+  </script>
+  
+  <script>
+    var liList = Persistence.getItem('liList');
+  
+    if (!liList) {
+      var optionList = document
+        .getElementById('option')
+        .innerHTML.split('---');
+  
+      var answerCharacterList = document
+        .getElementById('answer')
+        .innerHTML.split('');
+  
+      var answerValueList = answerCharacterList.map(
+        (item) => optionList[item.charCodeAt() - 65]
+      );
+      liList = chaosSort(optionList);
+  
+      Persistence.setItem('liList', liList.join('☆'));
+      Persistence.setItem(
+        'answerValueList',
+        answerValueList.join('☆')
+      );
+    } else {
+      liList = liList.split('☆');
+    }
+  
+    var checkedValueList = Persistence.getItem('checkedValueList');
+    if (!checkedValueList) {
+      checkedValueList = [];
+    } else {
+      checkedValueList = checkedValueList.split('☆');
+    }
+  
+    var answerValueList =
+      Persistence.getItem('answerValueList').split('☆');
+    var olElement = document.getElementById('ol');
+  
+    liList.forEach((item) =>
+      olElement.appendChild(
+        createElementLi(item, answerValueList, checkedValueList)
+      )
+    );
+  
+    function createElementLi(value, answerValueList, checkedValueList) {
+      var liElement = document.createElement('li');
+      var inputElement = document.createElement('input');
+      var labelElement = document.createElement('label');
+  
+      if (answerValueList.length == 1) {
+        // 单选
+        inputElement.setAttribute('type', 'radio');
+      } else {
+        // 多选
+        inputElement.setAttribute('type', 'checkbox');
+      }
+  
+      inputElement.setAttribute('value', value);
+      inputElement.setAttribute('id', value);
+      inputElement.setAttribute('name', 'option');
+      inputElement.setAttribute('onclick', 'clickOnSelection(this)');
+      if (checkedValueList.indexOf(value) !== -1) {
+        inputElement.setAttribute('checked', 'checked');
+      }
+  
+      labelElement.setAttribute('for', value);
+      labelElement.innerHTML = value;
+  
+      liElement.appendChild(inputElement);
+      liElement.appendChild(labelElement);
+      liElement.setAttribute('value', value);
+  
+      return liElement;
+    }
+  
+    function clickOnSelection(e) {
+      // 如果点击的是单选框
+      if (e.type === 'radio') {
+        // 将已选值列表清空，将当前选中值加入列表
+        checkedValueList.length = 0;
+        checkedValueList.push(e.value);
+      }
+      // 如果点击的是复选框
+      else if (e.type === 'checkbox') {
+        // 如果复选框被选中，将当前选中值加入列表
+        if (e.checked) {
+          checkedValueList.push(e.value);
+        }
+        // 如果复选框未被选中，从已选值列表中移除当前值
+        else {
+          const index = checkedValueList.indexOf(e.value);
+          if (index !== -1) {
+            checkedValueList.splice(index, 1);
+          }
+        }
+      }
+      Persistence.setItem(
+        'checkedValueList',
+        checkedValueList.join('☆')
+      );
+    }
+  
+    function chaosSort(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+  </script>
+  
