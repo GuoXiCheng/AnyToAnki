@@ -52,6 +52,28 @@ try:
     from aqt import mw
     from aqt.qt import QAction, QMessageBox
 
+    def add_note_with_template(deck_name: str, note_type_name: str):
+        # 获取默认牌组
+        deck = mw.col.decks.byName(deck_name)
+
+        # 打开一个笔记模板
+        note_type = mw.col.models.byName(note_type_name)
+
+        # 设置当前笔记模板
+        mw.col.models.set_current(note_type)
+
+        # 从笔记模板创建笔记
+        note = mw.col.newNote()
+
+        # 设置笔记内容
+        note.fields[0] = "Front"  
+        note.fields[1] = "Back"   
+        
+        # 将笔记添加到牌组
+        mw.col.add_note(note, deck_id=deck['id'])
+
+
+
     def update_or_create_note_type():
         path = os.path.join(
             os.path.dirname(__file__), "note-type/choice-question/config.json"
@@ -83,6 +105,7 @@ try:
         tmpl["qfmt"] = qfmt_template
         tmpl["afmt"] = afmt_template
         mw.col.models.save(note_type)
+        
 
     def on_sync_clicked():
         try:
