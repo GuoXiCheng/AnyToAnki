@@ -35,6 +35,12 @@ deactivate
 
 ## 测试
 
-测试: `pytest`
+测试: `pytest -s`
 
 测试覆盖率: `pytest --cov=src`
+
+## 切换镜像源
+
+```bash
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
